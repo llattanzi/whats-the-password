@@ -7,6 +7,14 @@
 // 5. special characters?
 // validate responses, atleast 1 character type should be selected
 
+// GLOBAL VARIABLES
+// create lists of possible characters for each type
+var lowercaseOptions = "abcdefghijklmnopqrstuvwxyz";
+var uppercaseOptions = lowercaseOptions.toUpperCase();
+var numericOptions = "123456789";
+// not allowing spaces or " character
+var specialOptions = "!#$%&'()*+,-./:;<=>?@[\]^_`{|}~";
+
 // prompt the user for password length and validate the response
 function getCharacterLength() {
   var passwordLength = window.prompt("Please type the desired length of your password (must be between 8 and 128 characters long).");
@@ -61,14 +69,6 @@ function generatePassword() {
     characterLength: getCharacterLength(),
     characterTypes: getCharacterType()
   };
-
-
-  // create list of possible characters for each type
-  var lowercaseOptions = "abcdefghijklmnopqrstuvwxyz";
-  var uppercaseOptions = lowercaseOptions.toUpperCase();
-  var numericOptions = "123456789";
-  // not allowing spaces or " character
-  var specialOptions = "!#$%&'()*+,-./:;<=>?@[\]^_`{|}~";
   
   // build a complete list of character options based on given criteria
   characters = "";
@@ -85,6 +85,12 @@ function generatePassword() {
     characters = characters + specialOptions;
   }
 
+  var password = buildPassword(passwordInfo, characters);
+
+  return password;
+};
+
+function buildPassword (passwordInfo, characters) {
   var password = "";
   // keep appending random characters from our list until our password length is reached
   for (i = 0; i < passwordInfo.characterLength; i++) {
@@ -96,7 +102,76 @@ function generatePassword() {
     password = password + randomCharacter;
   };
 
+  var verified = verifyPassword(passwordInfo, password);
+
+  if (!verified) {
+    return buildPassword(passwordInfo, characters);
+  }
+
   return password;
+};
+
+// verify that each character type the user wanted is in our generated password. If not, generate a new one
+function verifyPassword (passwordInfo, password) {
+  // if password criteria includes lowercase, check the password for a lowercase letter
+  if (passwordInfo.characterTypes.lowercase) {
+    var lowercaseCheck = false;
+    for (i = 0; i < password.length; i++) {
+      if (lowercaseOptions.includes(password[i])) {
+        lowercaseCheck = true;
+        // don't need to check the rest of the characters if lowercase is found
+        break;
+      }
+    }
+    if (!lowercaseCheck) {
+      return false;
+    }
+  }
+
+  // if password criteria includes uppercase, check the password for a uppercase letter
+  if (passwordInfo.characterTypes.uppercase) {
+    var uppercaseCheck = false;
+    for (i = 0; i < password.length; i++) {
+      if (uppercaseOptions.includes(password[i])) {
+        uppercaseCheck = true;
+        break;
+      }
+    }
+    if (!uppercaseCheck) {
+      return false;
+    }
+  }
+
+  // if password criteria includes numeric characters, check for a number in the password
+  if (passwordInfo.characterTypes.numeric) {
+    var numericCheck = false;
+    for (i = 0; i < password.length; i++) {
+      if (parseInt(password[i])) {
+        numericCheck = true;
+        break;
+      }
+    }
+    if (!numericCheck) {
+      return false;
+    }
+  }
+
+
+  if (passwordInfo.characterTypes.special) {
+    var specialCheck = false;
+    for (i = 0; i < password.length; i++) {
+      if (specialOptions.includes(password[i])) {
+        specialCheck = true;
+        break;
+      }
+    }
+    if (!specialCheck) {
+      return false;
+    }
+  }
+
+  // if we made it through all the checks, return true
+  return true;
 };
 
 // Get references to the #generate element
