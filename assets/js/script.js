@@ -22,7 +22,7 @@ function getCharacterLength() {
     return getCharacterLength();
   }
   return passwordLength;
-}
+};
 
 function getCharacterType(types) {
 
@@ -44,7 +44,7 @@ function getCharacterType(types) {
       typeCheck = true;
     }
     return response;
-  }
+  };
 
   // atleast one character type must have been selected. repeat function if not
   if (!typeCheck) {
@@ -52,22 +52,52 @@ function getCharacterType(types) {
     return getCharacterType();
   }
 
-  console.log(typeCheck);
   return characterTypes;
-}
+};
 
-function getPasswordInfo() {
+function generatePassword() {
+  // generate password criteria
   var passwordInfo = {
     characterLength: getCharacterLength(),
     characterTypes: getCharacterType()
   };
-  console.log(passwordInfo.characterTypes.lowercase);
-  console.log(passwordInfo.characterTypes.special);
-}
 
-function generatePassword() {
-  var passwordInfo = getPasswordInfo();
-}
+
+  // create list of possible characters for each type
+  var lowercaseOptions = "abcdefghijklmnopqrstuvwxyz";
+  var uppercaseOptions = lowercaseOptions.toUpperCase();
+  var numericOptions = "123456789";
+  // not allowing spaces or " character
+  var specialOptions = "!#$%&'()*+,-./:;<=>?@[\]^_`{|}~";
+  
+  // build a complete list of character options based on given criteria
+  characters = "";
+  if (passwordInfo.characterTypes.lowercase) {
+    characters = characters + lowercaseOptions;
+  }
+  if (passwordInfo.characterTypes.uppercase) {
+    characters = characters + uppercaseOptions;
+  }
+  if (passwordInfo.characterTypes.numeric) {
+    characters = characters + numericOptions;
+  }
+  if (passwordInfo.characterTypes.special) {
+    characters = characters + specialOptions;
+  }
+
+  var password = "";
+  // keep appending random characters from our list until our password length is reached
+  for (i = 0; i < passwordInfo.characterLength; i++) {
+    // generate a random number between 0 and length of our character options
+    // use this number to index a character from our list
+    var randomIndex = Math.floor(Math.random()*characters.length);
+    var randomCharacter = characters.charAt(randomIndex);
+    // append this character to our password
+    password = password + randomCharacter;
+  };
+
+  return password;
+};
 
 // Get references to the #generate element
 var generateBtn = document.querySelector("#generate");
@@ -79,7 +109,7 @@ function writePassword() {
 
   passwordText.value = password;
 
-}
+};
 
 // Add event listener to generate button
 generateBtn.addEventListener("click", writePassword);
