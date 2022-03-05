@@ -24,12 +24,45 @@ function getCharacterLength() {
   return passwordLength;
 }
 
+function getCharacterType(types) {
+
+  // create variable to check if a character type was selected
+  var typeCheck = false;
+
+  // build character types object with boolean values set from user prompt function
+  var characterTypes = {
+    lowercase: promptType("lowercase"), 
+    uppercase: promptType("uppercase"), 
+    numeric: promptType("numeric"), 
+    special: promptType("special")
+  };
+
+  // single function to handle multiple character type prompts
+  function promptType(message) {
+    var response = window.confirm("Would you like to include " + message + " characters?");
+    if (response) {
+      typeCheck = true;
+    }
+    return response;
+  }
+
+  // atleast one character type must have been selected. repeat function if not
+  if (!typeCheck) {
+    window.alert("You must choose at least one character type to include.")
+    return getCharacterType();
+  }
+
+  console.log(typeCheck);
+  return characterTypes;
+}
+
 function getPasswordInfo() {
   var passwordInfo = {
     characterLength: getCharacterLength(),
-
-  }
-
+    characterTypes: getCharacterType()
+  };
+  console.log(passwordInfo.characterTypes.lowercase);
+  console.log(passwordInfo.characterTypes.special);
 }
 
 function generatePassword() {
